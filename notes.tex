@@ -1,0 +1,749 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{commath}
+\usepackage{amsfonts}
+\usepackage{esvect}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{epsfig}
+\usepackage{titling}
+\usepackage{url}
+\usepackage{array}
+\usepackage{empheq}
+\usepackage{systeme}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{multirow}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{hyperref}
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{remark}{Remark}
+
+\renewcommand{\arraystretch}{1.4}
+
+\title{MATH3901 Operations Research I\\
+				2020-2021 Semester 1\\
+                Exam Revision Notes}
+
+\author{Chun Lai Ma}
+
+\begin{document}
+
+	\maketitle
+
+	\tableofcontents
+	\break
+
+	\section{Foundations of Linear Programming}
+	\begin{definition}[Standard formulation of LP problem]\hfill
+		\begin{align*}	
+			\text{min} \quad& c^T x \\
+			\text{s.t.} \quad& Ax = b \\
+			\text{where} \quad& x \geq 0;\\
+			&x, c \in \mathbb{R}^n, b \in \mathbb{R}^m, A \in \mathbb{R}^{m\times n}
+		\end{align*}
+		\textbf{Remark.} Introduce slack variables whenever $Ax \geq b$ or $Ax \leq b$ constraints appear.
+	\end{definition}
+
+	\noindent In the following context, unless otherwise specified, $m$ can be seen as the number of constraints, $n$ as the number of variables, and $A, b, c$ as the vectors/matrices as seen in the above format.
+
+	\begin{definition}[Polyhedral set]\hfill\break
+		A set with an intersection of of finite number of closed halfspaces in the form $\{x : Ax \leq b\}$ is a polyhedral set.
+		The feasible region of a LP problem is a polyhedral set.
+	\end{definition}
+
+	\begin{definition}[Convex combination and Convex Hull]\hfill
+		\begin{itemize}
+			\item $x_1, \dots, x_k \in \mathbb{R}^n$ and $\alpha_1, \dots, \alpha_k \in \mathbb{R}$
+			\item Let $x = \alpha_1x_1+\dots+\alpha_kx_k$
+			\item If $\alpha_1, \dots, \alpha_k \geq 0$ and $\alpha_1+\dots+\alpha_k = 1$, $x$ is a convex combination of $\{x_1, \dots, x_k\}$
+			\item If further that at least one $0 < \alpha_i < 1$, $i \in \{1,\dots,k\}$, $x$ is a proper convex combination of $\{x_1, \dots, x_k\}$.
+			\item The set of all possible convex combinations of $\{x_1, \dots, x_k\}$ is the convex hull, denoted by conv$\{x_1, \dots, x_k\}$
+		\end{itemize}
+	\end{definition}
+
+	\begin{example}
+		Let $x_1 = (1,0)^T, x_2 = (0,1)^T$. Find conv$\{x_1, x_2\}$.\\
+		\textbf{Solution.} $\left\{ \alpha_1x_1 + \alpha_2x_2 : \alpha_1, \alpha_2 \geq 0,\text{ }\alpha_1+\alpha_2 = 1\right\}$. Graphically as closed line segment from $(0,1)$ to $(1,0)$. In particular, $(0, 1)$ and $(1, 0)$ are not a proper convex combination.
+	\end{example}
+
+	\begin{definition}[Vertex and Extreme Point]\hfill\break
+		A vector $x \in S$ is a vertex (or extreme point) if $x$ is not a proper convex combination of any two distinct points of $S$ (graphically on the edge).
+	\end{definition}
+
+    \break
+	\section{Basic Theory in Linear Programming}
+	\subsection{Vertex and bounded polyhedral sets}
+	\begin{theorem}[Vertex]\hfill\break
+		Consider $S = \{x \in \mathbb{R}^n: Ax = b; x \geq 0\}$. A vector $x \in S$ is a vertex if and only if the column vectors of $A$ corresponding to positive components of $x$ are linearly independent.
+		\begin{itemize}
+			\item A polyhedral set has finitely many vertices
+			\item If $A \in \mathbb{R}^{m\times n}$, then every vertex of $S$ has at most $m$ positive values.
+		\end{itemize}
+	\end{theorem}
+
+	\begin{example}\hfill\break
+		Consider $S =
+			\begin{aligned}[t]
+				\{x \in \mathbb{R}^4:\quad &x_1+2x_3 = 2\\
+				&x_1+x_2-x_4 = 3\\
+				&x_3+x_4 =1\\
+				&x_1, x_2, x_3, x_4 \geq 0\}
+			\end{aligned}$\\\\Is $x = (2, 2, 0, 1)$ is a vertex of $S$?\\\\
+		$A = \begin{bmatrix} 1 & 0 & 2 & 0 \\ 1 & 1 & 0 & -1 \\ 0 & 0 & 1 & 1 \end{bmatrix}$, and $x_1, x_2, x_4$ are positive. Then we verify if $A_1, A_2, A_4$ are linearly independent.\\\\Indeed, $(1, 1, 0)^T$, $(0,1,0)^T$ and $(0,-1,1)^T$ are linearly independent, so $x$ is a vertex of $S$.
+	\end{example}
+
+	\begin{definition} [Basis and Basic Solution] \hfill \break
+		Consider the standard LP, with the rank of A being $m$. A set $B = \{A_{i1}, A_{i2}, \dots, A_{im}\}$ of $m$ linearly independent column vectors of $A$ is a basis. There are $\displaystyle{n \choose m}$ bases in a LP problem.\\The solution set of $A_{i1}x_{i1} + \dots + A_{im}x_{im} = b$ is the basic solution corresponding to the basis with $x_{i1}, \dots, x_{im}$ as the basic variables (other non-basic variables $=0$). If basic solution $x \geq 0$, $x$ is a basic feasible solution.
+	\end{definition}
+
+	\begin{theorem}[Vertex and Basic Solution]\hfill\break
+		A vector $x \in S$ is a vertex if and only if it is a basic feasible solution.
+	\end{theorem}
+
+	\begin{definition}[Degenerate vertex]\hfill\break
+		A degenerate vertex $x \in \mathbb{R}^n$ has
+		\begin{itemize}
+			\item less than $m$ positive components
+			\item number of positive components less than number of constraints in $A$
+			\item its basic solution containing 0
+		\end{itemize}
+	\end{definition}
+
+	\begin{example}\hfill\break
+		Consider $S$ in 2.1.\\ $x = (0, 3, 1, 0)$ is a degenerate vertex of $S$.
+	\end{example}
+
+	\subsection{Directions and unbounded Polyhedral sets}
+	\begin{definition}[Direction]\hfill\break
+		Given a set $S$, a nonzero vector $d$ is a direction of $S$ if $\{x + \lambda d : \lambda \geq 0\} \subset S$, $\forall x \in S$.
+		\begin{itemize}
+		    \item Bounded sets will not have directions
+		    \item A direction $d$ must satisfy $d > 0$ and $Ad = 0$
+		    \item To avoid duplication, the set of directions is defined as $D = \{d \in \mathbb{R}^n: Ad = 0, d_1+d_2+\dots+d_n = 1, d \geq 0\}$.
+		\end{itemize}
+	\end{definition}
+
+	\begin{remark}
+		$D$ is a standard LP problem. Extreme points of $D$ are called extreme directions of $S$. Also, the number of extreme directions is finite.
+	\end{remark}
+	
+	\begin{theorem}[Minkowski-Weyl Theorem]\hfill\break
+		If $S$ is unbounded, the set of extreme points and extreme directions are both nonempty and finite ($x_1, x_2, \dots, x_k, d_1, d_2, \dots, d_l$).\\ For all $x \in S$, $x = \lambda_1x_1 + \dots + \lambda_kx_k + \mu_1d_1+\dots+\mu_ld_l$, where
+		\begin{itemize}
+		    \item $\lambda_1+\dots+\lambda_k=1$
+		    \item $\lambda_1, \dots, \lambda_k, \mu_1, \dots, mu_l \geq0$
+		\end{itemize}
+	\end{theorem}
+
+    \subsection{Obtaining the optimal of sets}
+    	\begin{theorem}[Optimality of Bounded Polyhedral Sets]\hfill
+		\begin{itemize}
+			\item Any vector $x \in S$ of an LP problem can be represented as a convex combination of vertices of $S$
+			\item If $S$ is bounded, at least one of the vertices of $S$ is an optimal point of the LP problem
+		\end{itemize}
+	\end{theorem}
+
+	\begin{theorem}[Optimality of Unbounded Polyhedral Sets]\hfill
+	\label{ubpolysetop}
+		\begin{itemize}
+			\item In the context of minimization (flip the sign otherwise),
+			\item If $c^Td_j \geq 0$ for all extreme directions $d_j$: at least one extreme point is an optimal solution.
+			\item Otherwise: optimal objective value is $-\infty$.
+		\end{itemize}
+	\end{theorem}
+
+    \subsection{Summary}
+	\begin{tabular}{ | m{10em} | m{10em} | m{20em} | } 
+    	\hline
+    	Property & Bounded Set & Unbounded Set \\
+    	\hline
+    	Exists Vertices & Yes & Yes \\
+    	\hline
+    	Exists Directions & No & Yes \\
+    	\hline
+    	Condition for $x \in S$ & Convex combination of vertices of $S$ & Convex combination of vertices and non-negative combination of directions of $S$ \\
+    	\hline
+    	Optimality & One of the vertices & If $c^Td_j \geq 0$ for all $j \in \{1,\dots,l\}$, one of the vertices, otherwise $-\infty$ \\
+    	\hline
+    \end{tabular}
+    
+    \break
+	\section{Simplex Method and Optimality of Linear Programming}
+	\subsection{Motivation}
+	We want to find min $\{c^Tx^1, \dots, c^Tx^k\}$ as the optimal solution is in the set (for unbounded sets, the optimality can be $-\infty$). Simplex method goes through $c^Tx^i$ in a specific order.
+
+	\begin{theorem}[Feasibility and optimality conditions of LP problem]\hfill\break
+	    Denote $B \in \mathbb{R}^{m \times m}$ as a basis matrix, $N \in \mathbb{R}^{m \times (n-m)}$ as the non-basic matrix, $A$ as the matrix of the original LP problem.\\
+	    Consider the following (equivalent) LP problem in the form of a minimal program:
+		\begin{align*}
+			\text{min} \quad& (c_N^T - c_B^T B^{-1} N) x_N + c_B^T B^{-1} b \\
+			\text{s.t.} \quad& B^{-1}Nx_N \leq B^{-1}b \\
+			\quad& x_N \geq 0
+		\end{align*}
+		\begin{itemize}
+			\item If $B^{-1}b \geq 0$, $\mathbf{0} \in \mathbb{R}^{n-m}$ is a feasible solution of the program.
+			\item If $B^{-1}b \geq 0$ and $c_N^T - c_B^T B^{-1} N \geq 0$, $\mathbf{0} \in \mathbb{R}^{n-m}$ is an optimal solution.
+			\item If there is a non-basic variable $x_j$, where $c_j-c_B^TB^{-1}A_j < 0$, then objective value can be decreased by increasing $x_j$.
+			\item If for all non-basic variable $x_j$ where $c_j-c_B^TB^{-1}A_j < 0$, then optimal value is $-\infty$.
+		\end{itemize}
+		This means as we start from a basic feasible solution of the LP problem, we can use simplex method to determine better answers or the optimality of problems.
+	\end{theorem}
+
+    \subsection{Simplex Tableau and Algorithm}
+	\begin{definition}[Simplex Tableau]\hfill\break
+		A simplex tableau is determined as follows:\\
+		\begin{center}
+		\begin{tabular}{ | c | c | c | c | } 
+			\hline
+			& $x_B$ & $x_N$ & Sol \\
+			\hline
+			$z$ & $0$ & $c_B^TB^{-1}N-c_N^T$ & $c_B^TB^{-1}b$ \\
+			\hline
+			$x_B$ & $I$ & $B^{-1}N$ & $B^{-1}b$ \\
+			\hline
+		\end{tabular}
+		\end{center}
+        
+        \hfill
+		\begin{itemize}
+			\item A simplex tableau is uniquely determined by a basis matrix $B$ and the basic solution\\ with $x_B = B^{-1}b$ and $x_N = 0$. That is, a simplex tableau can be obtained when $B$ is known.
+			\item The basic solution is feasible if and only if $B^{-1}b \geq 0$.
+			\item The basic solution is optimal if and only if $B^{-1}b \geq 0$ and $c_B^TB^{-1}N-c_N^T \leq 0$. The optimal value is $c_B^TB^{-1}b$.
+			\item All vectors/matrices must follow the order of $\{i_1, \dots, i_m\}$ for a correct tableau.
+		\end{itemize}
+	\end{definition}
+
+	\begin{definition}[Simplex Tableau Algorithm for Minimization]\hfill
+		\begin{enumerate}
+			\item Start with a simplex tableau where it is a feasible solution ($f \geq 0$).
+			\item Let $r = c_B^TB^{-1}N-c_N^T$.
+			\item If all nonbasic entries of the top row ($r$) $\leq 0$, the tableau is optimal with value $c_B^TB^{-1}b$.
+			\item Otherwise, if there is $r_k > 0$ and the column of $B^{-1}N$ corresponding to $r_k \leq 0$, the optimal objective value is $-\infty$.
+			\item Otherwise, choose $r_k > 0$ and find the row $i$ such that $\displaystyle \frac{f_j}{d_{i,k}} =$ min$\left\{\displaystyle \frac{f_j}{d_{j,k}}: d_{j,k}>0, 1\leq j\leq m\right\}$.
+			\item Apply ERO on the simplex tableau so that the $(m+k)$-th column becomes $(0, \dots, 0, 1, 0, \dots, 0)^T$ where the $(i+1)$-th entry of the vector is 1.
+		\end{enumerate}
+		\textbf{Remark.} For maximization problems, in step 2, the terminating condition is when the top row are all $\geq 0$, and in step 3, it applies when there exists a row entry $r_k < 0$. Cost coefficients are multiplied by $-1$ initially.
+	\end{definition}
+
+    \subsection{Revised simplex algorithm}
+	\begin{definition}[Elementary row operations and Left Multiplication Matrix]\hfill\break
+		The operation of adding a constant multiple of one row into the same or another row of a matrix is called an elementary row operation (e.g. $\delta r_k + \mu r_m \rightarrow r_k$). It can be obtained equivalently by a left multiplication on the matrix.
+	\end{definition}
+
+	\begin{definition}[Revised Simplex]\hfill\break
+		The simplex method can be made more efficient if the redundant calculations can be omitted, as observed above:
+		\begin{enumerate}
+			\item Compute $r = c_B^TB^{-1}N-c_N^T$. If $r \leq 0$, the tableau is optimal.
+			\item If there is $r_k > 0$, compute all columns associated with $k$ ($d_k = B^{-1}A_{N(k)}$). If there exists $d_k \leq 0$, optimal value is $-\infty$.
+			\item Otherwise, choose $r_k > 0$ and find the row $i$ such that $\displaystyle \frac{f_j}{d_{i,k}} =$ min$\left\{\displaystyle \frac{f_j}{d_{j,k}}: d_{j,k}>0, 1\leq j\leq m\right\}$.
+			\item Update basis matrix from $B$ to $\Tilde{B}$, substituting $A_{B(i)}$ as $A_{N(k)}$.\\ $\Tilde{B} = \begin{pmatrix} A_{B(1)} & \dots & A_{B(i-1)} & A_{N(k) A_{B(i+1)} & \dots & A_{B(m)} \end{pmatrix}$
+			\item Compute and store $\Tilde{B}^{-1}$.
+		\end{enumerate}
+		
+	\end{definition}
+
+    \subsection{Finding the initial basic feasible solution}
+	Recall that a basic feasible solution is required for simplex method to start. We need a set of basic variables to start with, which appear in the form of identity matrix ($I$) in the simplex tableau.
+
+	\begin{definition}[Big-M technique]\hfill
+	    \begin{itemize}
+	        \item Add variables to $A$ such that $I$ appears in the tableau
+	        \item Add (min) or subtract (max) $MR_1 + MR_2 + \dots + MR_k$ to the cost vector\\($k$ is the number of rows that does not have (0 $\dots$ 1 $\dots$ 0)).
+	        \item Add/subtract $R_i$ to the rows which does not have a basic solution
+	        \item The new LP problem has a basic feasible solution and same optimal solution as the original (with $M$ sufficiently large).
+	   \end{itemize}
+	\end{definition}
+
+	\begin{definition}[Two-phase technique]\hfill
+	    \begin{itemize}
+	        \item Modify the equations in the same way as the Big-M technique
+	        \item Solve min $R_1+R_2 + \dots + R_k$ instead
+	        \item The optimal solution should yield $(x_1^*, x_2^*, \dots, R_1^*, R_2^*, \dots)$ with $R_1^*=R_2^*=\dots=0$
+	        \item Start with the original problem with $(x_1^*, x_2^*, \dots)$ as a basic feasible solution.
+	   \end{itemize}
+        \textbf{Remark.} If min $R_1+R_2 + \dots$ doesn't return 0, the problem is infeasible.
+	\end{definition}
+
+	\subsection{Special cases in Simplex Method}
+	\begin{definition}[Infeasible Problem]\hfill\break
+		Obviously, it only happens when $I$ is not already in the tableau. A problem is infeasible if in the big-M technique, for example, $R \neq 0$ when optimality condition is satisfied, or when two phase method doesn't yield $R = 0$ in the first phase.
+	\end{definition}
+
+	\begin{definition}[Feasible direction]\hfill\break
+		$d$ is a direction if for any feasible solution $x$ and $\lambda > 0$, $x+\lambda d$ is feasible. In the optimal solution, if two columns of a variable are linearly dependent, there exists a vector $d$ such that $Ad = 0$.
+	\end{definition}
+
+	\begin{example}\hfill\break
+		Consider the following simplex tableau:\\
+		\begin{tabular}{ | c | c | c | c | c | c | } 
+			\hline
+			Basic & $x_1$ & $x_2$ & $x_3$ & $x_4$ & Sol \\
+			\hline
+			$z$ & $0$ & $0$ & 2 & 2 & 10 \\
+			\hline
+			$x_1$ & 1 & 0 & 0 & 1 & 3 \\ 
+			\hline
+			$x_2$ & 0 & 1 & $-1$ & 2 & 4 \\ 
+			\hline
+		\end{tabular}\break\break
+	$x_2$'s column is $(0,1)^T$ while $x_3$ is $(0,-1)^T$. Then if $d = (0, 1, 1, 0)^T$, $Ad = A(0, 1)^T + A(0, -1)^T = 0$. Also since $d \geq 0$, $d$ is a feasible direction.
+	\end{example}
+
+	\begin{remark}
+		In general, the simplex tableau in the above example is exactly equivalent to original problem $Ax = b$. That is, $Ax = b \Leftrightarrow \begin{pmatrix}1 \\ 0 \end{pmatrix} x_1 + \begin{pmatrix}0 \\ 1 \end{pmatrix} x_2 + \begin{pmatrix}0 \\ -1 \end{pmatrix} x_3 + \begin{pmatrix}1 \\ 2 \end{pmatrix} x_4 = \begin{pmatrix}3 \\ 4 \end{pmatrix}$
+	\end{remark}
+
+	\begin{definition}[Unboundedness]\hfill\break
+		The solution is unbounded if (for minimization) there is a row where its cost coefficient $>0$ and all column entries $d$ of the row is $\leq 0$. (Equivalent to step 2 check in the simplex algorithm).
+	\end{definition}
+
+	\begin{definition}[Uniqueness of optimum]\hfill\break
+		If the optimal simplex tableau has a non-basic variable whose reduced cost coefficient is zero, then the optimal solution is not unique because one can exchange that non-basic variable with a basic variable.
+	\end{definition}
+
+	\begin{remark}
+		The optimal solution is not unique if the number of positive components in the reduced cost coefficient is $< n-m$.
+	\end{remark}
+
+	\begin{definition}[Degeneracy and Cycling]\hfill\break
+		Recall the definition of degenerate vertex, a LP problem is degenerate if there exists a basic variable which at a solution, is 0. It may cause problems like cycling, because $b_i = 0$ and if that variable at $d$ is positive, it will always be chosen for the pivot (according to step 3 in simplex algorithm).
+	\end{definition}
+
+	\begin{definition}[Dantzig's Rule]\hfill
+		\begin{itemize}
+			\item Entering variable: Choose the non-basic variable with largest coefficient to enter basis
+			\item Leaving variable: Choose the row with smallest index to leave the basis when minimum ratio occurs in more than one row
+		\end{itemize}
+	\end{definition}
+
+	\begin{definition}[Bland's Rule]\hfill
+		\begin{itemize}
+			\item Entering variable: Choose the non-basic variable with smallest index to enter basis
+			\item Leaving variable: Choose the row with smallest index to leave the basis when minimum ratio occurs in more than one row
+		\end{itemize}
+	\end{definition}
+
+	\begin{theorem}[Termination of Bland's pivoting rule]\hfill\break
+		Simplex method with Bland's pivoting rule always terminate in finite number of steps.
+	\end{theorem}
+
+    \break
+	\section{Duality Theory}
+	For every (LP) primal problem, a dual problem can be attached by associating a variable for every constraint in the dual problem, and vice versa.
+    
+    \subsection{Duality Theorems}
+	\begin{definition}[Dual problem]\hfill
+	For every standard LP problem, we associate a dual LP as follows:
+	\underline{Primal problem}
+	\begin{align*}	
+		\text{min} \quad& c^T x \\
+		\text{s.t.} \quad& Ax = b \\
+		\text{where} \quad& x \geq 0;\\
+		&x, c \in \mathbb{R}^n, b \in \mathbb{R}^m, A \in \mathbb{R}^{m\times n}
+	\end{align*}
+	In addition, we assume $m \leq n$ and rank($A$) = $m$.\\\\
+	\underline{Dual problem}
+	\begin{align*}	
+		\text{max} \quad& b^T y \\
+		\text{s.t.} \quad& A^Ty \leq c \\
+		\text{where} \quad& x \geq 0;\\
+		&c \in \mathbb{R}^n, b,y \in \mathbb{R}^m, A \in \mathbb{R}^{m\times n}
+	\end{align*}
+	\end{definition}
+
+	\begin{remark}\hfill
+	    \begin{itemize}
+	        \item $m$ = Number of primal constraints = Number of dual variables
+	        \item $n$ = Number of primal variables = Number of dual constraints
+	    \end{itemize}
+	\end{remark}
+
+	\begin{definition}[Table for conversion of Dual and Primal problem]\hfill\break
+	    \begin{center}
+		\begin{tabular}{ c|c } 
+ 			Primal LP & Dual LP \\ 
+			\hline
+ 			Minimization & Maximization \\ 
+			\hline
+ 			Variables & Constraints \\
+			$\geq 0$ & $\leq 0$\\
+			$\leq 0$ & $\geq 0$\\
+			unsigned & $=$\\
+			\hline
+			Constraints & Variables\\
+			$\geq 0$ & $\geq 0$\\
+			$\leq 0$ & $\leq 0$\\
+			$=$ & unsigned\\
+		\end{tabular}
+		\end{center}
+		\hfill
+	\end{definition}
+
+	\begin{example}
+		Write down the dual problem of:
+		\begin{align*}
+			\text{max} \quad& 6x_1+9x_2-2x_3 \\
+			\text{s.t.} \quad& x_1+5x_2+x_3\leq2 \\
+			& 4x_1-7x_2-2x_3=8 \\
+			\text{where} \quad& x_1 \leq 0, x_2 \geq 0
+		\end{align*}
+
+		Solution.
+		\begin{align*}	
+			\text{min} \quad& 2y_1+8y_2 \\
+			\text{s.t.} \quad& y_1+4y_2 \leq 6\\
+			& 5y_1 - 7y_2 \geq 9\\
+			& y_1-2y_2 = -2\\
+			\text{where} \quad& y_1 \geq 0
+		\end{align*}
+	\end{example}
+
+	\begin{theorem}[Weak Duality Theorem]\hfill
+	    \begin{itemize}
+	        \item If $x$ is a feasible solution of the primal and $y$ is a feasible solution of the dual, $c^Tx \geq b^Ty$.
+	        \item If $x$, $y$ are respectively feasible and $c^Tx = b^Ty$, then $x$ and $y$ are respectively optimal to their LP problems.
+	        \item If the primal problem is unbounded, the dual problem is infeasible.
+	    \end{itemize}
+		Take primal and dual LP definition from Definition 5.1. Then i
+	\end{theorem}
+
+	\begin{theorem}[Strong Duality Theorem]
+		If either the primal problem or the dual problem has an optimal solution, both of them will have an optimal solution and the optimal values are equal.
+	\end{theorem}
+
+	\begin{remark}
+		The weak duality theorem says $p \geq d$, given $p$ and $d$ are optimal solutions of the primal and dual problem. Strong duality theorem assures that $p = d$.
+	\end{remark}
+	
+	\subsection{Complementary Slackness}
+	\begin{theorem}[Complementary Slackness Condition]\hfill\break
+		A feasible solution $x$ of the primal problem is optimal if and only if there exists $y$ such that
+		\begin{itemize}
+		    \item $Ax \geq b$
+		    \item $x \geq 0$
+		    \item $A^T y \leq c$
+		    \item $y \geq 0$
+		    \item $y^T (Ax-b) = 0$
+		    \item $x^T (A^Ty-c) = 0$
+		\end{itemize}
+	\end{theorem}
+    
+	\begin{example}
+		Write down the complementary slackness condition of the following program.
+		\begin{align*}
+			\text{max} \quad& 2x_1+x_2 \\
+			\text{s.t.} \quad& x_1+x_2\leq8 \\
+			& x_1+3x_2\leq 18 \\
+			& x_1-x_2 \leq 4\\
+			\text{where} \quad& x_1, x_2 \geq 0
+		\end{align*}
+		We are on the "dual" side due to maximization. The dual problem is:
+		\begin{align*}
+			& y_1+y_2+y_3 \geq 2 \\
+			& y_1+3y_2-y_3 \geq 1 \\
+			& y_1,y_2,y_3 \geq 0
+		\end{align*}
+		We also know that by the complementary slackness condition, $(x_1+x_2-8)y_1 + (x_1-3x_2-18)y_2 = 0$. Since $x_1+x_2-8 \leq 0$ and $y_1 \geq 0$, the product is $\leq 0$ and hence both must be 0 for the sum to be 0. Therefore we can write the two constraints as $(x_1+x_2-8)y_1 = 0$ and $(x_1-3x_2-18)y_2 = 0$.\\\\ In general, we can write the condition as $y_i(a_i^Tx-b_i)=0$ for all $i \in \{1, \dots, m\}$ and $x_j(A_j^Ty-c_j) = 0$ for all $j \in \{1, \dots, n\}$.\\\\ So we can write the requirements as
+		\begin{align*}
+			(x_1+x_2-8)y_1 &=0\\
+			(x_1+3x_2-18)y_2 &= 0\\
+			(x_1-x_2-4)y_3 &= 0\\
+			(y_1+y_2+y_3-2)x_1 &= 0\\
+			(y_1+3y_2-y_3-1)x_2 &= 0\\
+		\end{align*}
+		We can also deduce that at least one of the dual/primal constraints (the pairs) is 0. Is it possible that both of them are zero?
+	\end{example}
+
+	\begin{theorem}[Strict Complementary Slackness]\hfill\break
+	    Denote $a_i^T \in \mathbb{R}^n$ the $i$-th row vector of $A$ and $A_j \in \mathbb{R}^m$ the $j$-th column vector of $A$. Other symbols shall follow examples as stated above.\\
+	    Assume that both problems have an optimal solution, then there exists optimal solutions to the primal and to the dual such that they satisfy the strict complementary slackness, which is
+		\begin{itemize}
+			\item for every $j$ we have either $x_j > 0$ or $A_j^T y < c_j$, or
+			\item for every $i$ we have either $a_i^Tx > b_i$ or $y_i > 0$.
+		\end{itemize}
+	\end{theorem}
+
+    \subsection{Dual Simplex}
+    We can observe that
+    \begin{itemize}
+        \item Primal feasibility condition is the same as dual optimality condition
+        \item Dual feasibility condition is the same as primal optimality condition
+    \end{itemize}
+    Hence, we can find the optimality starting either from a primal feasible solution working towards a dual feasible solution (primal algorithm), or from a dual feasible solution towards a primal feasible solution (dual algorithm).\\
+    
+    \begin{center}
+	\begin{tabular}{ | c | c | c | c | } 
+		\hline
+		& $y_B$ & $y_N$ & Sol \\
+		\hline
+		$z$ & $0$ & $f_1 \dots f_i \dots f_m$ & $z_0$ \\
+		\hline
+		$y_N$ & $I$ & $-d_{1,j} \dots -d_{m,j}$ & $-r_j$ \\
+		\hline
+	\end{tabular}
+	\end{center}
+	\hfill\break
+    
+    \noindent We can even run dual simplex on a primal simplex tableau. (for maximization problem in primal).
+    
+    \begin{enumerate}
+			\item Start with a simplex tableau where $r = c_B^TB^{-1}N-c_N^T$, $r \leq 0$.
+			\item Let $f = B^{-1}b$.
+			\item If $f \geq 0$, the tableau is optimal with value $c_B^TB^{-1}b$ and corresponding primal optimal is ($x_B = (f_1, \dots, f_m)^T$, $x_N = 0$).
+			\item Otherwise, if there is $f_i < 0$ and the row of $B^{-1}N$ corresponding to $f_i$ $(d_{i,1}, \dots, d_{i,n-m}) \geq 0$, the optimal dual cost is $+\infty$ and the primal is infeasible.
+			\item Otherwise, choose $f_i < 0$ and find the column $i$ such that $\displaystyle \frac{r_k}{d_{i,k}} =$ min$\left\{\displaystyle \frac{r_j}{d_{i,j}}: d_{i,j}<0, 1\leq j \leq n-m\right\}$.
+			\item Apply ERO on the simplex tableau so that the $(n-m+i)$-th column becomes $(0, \dots, 0, 1, 0, \dots, 0)^T$ where the $(k+1)$-th entry of the vector is 1.
+		\end{enumerate}
+	
+	\break
+	\section{Sensitivity Analysis and Parametric Programming}
+	Sometimes, we would like to make changes on certain variables in the linear program and observe its changes. This can be done through parametric programming.
+	
+	\subsection{Local Sensitivity Analysis}
+	Common perturbations include:
+	\begin{itemize}
+	    \item Change in right-hand side vector $b$
+	    \item Change in cost coefficient $c$
+	    \item Change in matrix coefficients
+	    \item Introduction of new variables
+	    \item Introduction of new constraints
+	\end{itemize}
+	
+	\begin{definition} [Change in $b$] \hfill \break
+	    Changes in $b$ to $\Tilde{b}$ will affect the simplex tableau as follows:\\\\
+    	\begin{minipage}{.5\linewidth}
+          \centering
+    		\begin{tabular}{ | c | c | c | c | } 
+    			\hline
+    			& $x_B$ & $x_N$ & Sol \\
+    			\hline
+    			$z$ & $0$ & $c_B^TB^{-1}N-c_N^T$ & $c_B^TB^{-1}b$ \\
+    			\hline
+    			$x_B$ & $I$ & $B^{-1}N$ & $B^{-1}b$ \\
+    			\hline
+    		\end{tabular}
+        \end{minipage}
+        \begin{minipage}{.5\linewidth}
+          \centering
+    		\begin{tabular}{ | c | c | c | c | } 
+    			\hline
+    			& $x_B$ & $x_N$ & Sol \\
+    			\hline
+    			$z$ & $0$ & $c_B^TB^{-1}N-c_N^T$ & $c_B^TB^{-1}\Tilde{b}$ \\
+    			\hline
+    			$x_B$ & $I$ & $B^{-1}N$ & $B^{-1}\Tilde{b}$ \\
+    			\hline
+    		\end{tabular}
+        \end{minipage}
+        \hfill
+        
+        \begin{itemize}
+            \item We have the same optimal solution only if $B^{-1}\Tilde{b} \geq 0$.
+            \item Otherwise, the solution is primal infeasible. We can apply dual simplex, which helps us obtain a new optimal solution.
+        \end{itemize}
+	\end{definition}
+	
+	\begin{definition} [Change in $c$] \hfill \break
+	    Changes in $c$ to $\Tilde{c}$ will affect the simplex tableau as follows:\\\\
+    	\begin{minipage}{.5\linewidth}
+          \centering
+    		\begin{tabular}{ | c | c | c | c | } 
+    			\hline
+    			& $x_B$ & $x_N$ & Sol \\
+    			\hline
+    			$z$ & $0$ & $c_B^TB^{-1}N-c_N^T$ & $c_B^TB^{-1}b$ \\
+    			\hline
+    			$x_B$ & $I$ & $B^{-1}N$ & $B^{-1}b$ \\
+    			\hline
+    		\end{tabular}
+        \end{minipage}
+        \begin{minipage}{.5\linewidth}
+          \centering
+    		\begin{tabular}{ | c | c | c | c | } 
+    		    \hline
+    			& $x_B$ & $x_N$ & Sol \\
+    			\hline
+    			$z$ & $0$ & $\Tilde{c}_B^TB^{-1}N-\Tilde{c}_N^T$ & $\Tilde{c}_B^TB^{-1}b$ \\
+    			\hline
+    			$x_B$ & $I$ & $B^{-1}N$ & $B^{-1}b$ \\
+    			\hline
+    		\end{tabular}
+        \end{minipage}
+        \hfill
+        
+        \begin{itemize}
+            \item We have the same optimal solution only if $\Tilde{c}_B^TB^{-1}N-\Tilde{c}_N^T \geq 0$.
+            \item Otherwise, the solution is primal non-optimal, apply simplex.
+        \end{itemize}
+	\end{definition}
+	
+	\begin{definition} [Change in non-basic column $A$] \hfill \break
+	    Changes in $A$ to $\Tilde{A}$ will affect one of the $x_N$ columns in the simplex tableau. Assume it is column $j$.\\
+	    To maintain optimality, we need $c_j-(c'_BB^{-1})(A_j + \delta B_i) \geq 0$.
+	\end{definition}
+	
+	\begin{definition} [Introduction of new variables]\hfill\break
+	    LP problem is changed in the following way:\\
+	    \begin{minipage}{.5\linewidth}
+          \centering
+    	    \begin{align*}	
+    			\text{min} \quad& c^T x \\
+    			\text{s.t.} \quad& Ax = b \\
+    			\text{where} \quad& x \geq 0;\\
+    			&x, c \in \mathbb{R}^n, b \in \mathbb{R}^m, A \in \mathbb{R}^{m\times n}
+    		\end{align*}
+        \end{minipage}
+        \begin{minipage}{.5\linewidth}
+          \centering
+    	    \begin{align*}	
+    			\text{min} \quad& c^T x + c_{n+1}x_{n+1}\\
+    			\text{s.t.} \quad& Ax + A_{n+1}x_{n+1} = b \\
+    			\text{where} \quad& x \geq 0, x_{n+1} \geq 0;\\
+    			&x, c \in \mathbb{R}^n, b \in \mathbb{R}^m, A \in \mathbb{R}^{m\times n}, x_{n+1} \in \mathbb{R}
+    		\end{align*}
+        \end{minipage}
+        \hfill
+        
+        \noindent Feasibility condition of the simplex tableau is unchanged. Therefore we can run simplex method to obtain the new optimal.
+	\end{definition}
+	
+	\break
+	\begin{definition} [Introduction of new constraints] \hfill \break
+	    New row(s) $a^Tx \leq g$ is/are introduced in the simplex tableau.
+	    \begin{itemize}
+	        \item If the optimal solution already satisfies the constraint, it is also the new optimal.
+	        \item Otherwise, introduce slack variable $x_{n+1}$.\\\\
+	        Construct
+	        $\begin{bmatrix}
+	            B^{-1}A & 0 \\
+	            a'B^{-1}A-a'_{m+1} & 1\\
+	        \end{bmatrix}$
+	        as the new tableau, then apply the dual simplex.
+	    \end{itemize}
+	\end{definition}
+	
+	\subsection{Parametric Programming}
+	Main focus:
+	\begin{itemize}
+	    \item $t$ in the right-hand side vector
+	    \item $t$ in the cost coefficient
+	\end{itemize}
+	\hfill
+	
+	\begin{definition}[$t$ in right-hand side vector]\hfill
+	    \begin{align*}	
+			v(t) = \quad\text{max} \quad& c^T x\\
+			\text{s.t.} \quad& Ax \leq b + tb' \\
+			\text{where} \quad& x \geq 0
+    	\end{align*}
+    	
+    	\begin{center}
+        \begin{tabular}{ | c | c | c | c | c | } 
+    	    \hline
+    		& $x_B$ & $x_N$ & RHS & RHS' \\
+    		\hline
+    		$z$ & $0$ & $c_B^TB^{-1}N-c_N^T$ & $c_B^TB^{-1}b$ & $c_B^TB^{-1}b'$\\
+    		\hline
+    		$x_B$ & $I$ & $B^{-1}N$ & $B^{-1}b$ & $B^{-1}b'$ \\
+    		\hline
+    	\end{tabular}
+    	\end{center}
+    	\hfill
+    	
+    	\noindent Optimal value is $(c_B^TB^{-1})^Tb+t(c_B^TB^{-1})^Tb'$ when $B^{-1}b+tB^{-1}b' \geq 0$.\\
+    	
+    	\noindent In general,
+    	\begin{enumerate}
+    	    \item Solve the program when $t = 0$ and obtain an optimal simplex
+    	    \item Add an additional column (RHS') to the tableau
+    	    \item Find $B^{-1}$ and $c_B$
+    	    \item Find the range satisfying the feasibility condition ($B^{-1}b + tB^{-1}b' \geq 0$).
+    	    \item Examine the constraints not satisfying the feasibility when out of range. Identify them and mark them to leave the basis, and use dual simplex to iterate. Of course, the problem for some regions may be infeasible.
+    	\end{enumerate}
+    	
+	\end{definition}
+	
+	\break
+	\begin{definition}[$t$ in cost coefficient]\hfill
+	    \begin{align*}	
+			v(t) = \quad\text{max} \quad& (c+tc')^T x\\
+			\text{s.t.} \quad& Ax \leq b \\
+			\text{where} \quad& x \geq 0
+    	\end{align*}
+    	
+    	\begin{center}
+        \begin{tabular}{ | c | c | c | c |} 
+    	    \hline
+    		& $x_B$ & $x_N$ & RHS \\
+    		\hline
+    		$z'$ & $0$ & $(c'_B)^TB^{-1}N-(c'_N)^T$ & $(c'_B)^TB^{-1}b$\\
+    		\hline
+    		$z$ & $0$ & $c_B^TB^{-1}N-c_N^T$ & $c_B^TB^{-1}b$\\
+    		\hline
+    		$x_B$ & $I$ & $B^{-1}N$ & $B^{-1}b$ \\
+    		\hline
+    	\end{tabular}
+    	\end{center}
+    	\hfill
+    	
+    	\noindent Optimal value is $c_B^TB^{-1}b+t(c'_B)^TB^{-1}b$ when $c_B^TB^{-1}N-c_N^T+t((c'_B)^TB^{-1}N-(c'_N)^T) \geq 0$.\\
+    	    	
+    	\noindent In general,
+    	\begin{enumerate}
+    	    \item Solve the program when $t = 0$ and obtain an optimal simplex
+    	    \item Identify non-basic variables, find $B^{-1}$ and $N$.
+    	    \item Calculate $(c'_B)^TB^{-1}N-(c'_N)^T$.
+    	    \item Find $B^{-1}$ and $c_B$
+    	    \item Find the range satisfying the optimality condition ($c_B^TB^{-1}N-c_N^T+t((c'_B)^TB^{-1}N-(c'_N)^T) \geq 0$).
+    	    \item Examine the variables not satisfying the optimality when out of range. Identify them and mark them to leave the basis, and use simplex method to iterate.
+    	\end{enumerate}
+	\end{definition}
+	
+	\break
+	\section{Large Scale Linear Programming}
+	
+	\noindent Two common LP techniques:
+	\begin{itemize}
+	    \item Delayed Column Generation: As most of the variables in a linear program are non-basic, we only need to know a subset of variables when solving the problem. The cutting stock problem serves as an example of this.
+	    \item Cutting Plane Method: Delayed Constraint Generation, also the dual of Delayed Column Generation.
+	\end{itemize}
+
+	\subsection{Dantzig-Wolfe Decomposition}
+	\noindent Let $P$ be a polyhedral set, let $D \in \mathbb{R}^{m \times n}$ and $b \in \mathbb{R}^m$. Consider
+    \begin{align*}	
+		\text{min} \quad& c^T x\\
+		\text{s.t.} \quad& Dx = b \\
+		\quad& x \in P
+    \end{align*}
+    By Minkowski-Weyl Theorem, $P$ can be written as a convex combination of extreme points and non-negative combination of extreme directions.
+	
+	\subsection{Benders Decomposition}
+	
+	\section{Interior Point Methods}
+
+\end{document}

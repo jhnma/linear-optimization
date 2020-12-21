@@ -1,1 +1,1 @@
-linear-optimization
+Useful toolbox for linear optimization programs and revision
